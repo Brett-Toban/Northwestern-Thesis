@@ -1,0 +1,45 @@
+
+---
+title: "Combined Summary Tables"
+output: pdf_document
+---
+
+# Summary Statistics
+
+```{r, echo=FALSE}
+library(readr)
+library(kableExtra)
+library(dplyr)
+library(tidyr)
+
+summary_stats <- read_csv("../Data/summary_stats.csv")
+summary_stats %>%
+  pivot_longer(everything(), names_to = "Metric", values_to = "Value") %>%
+  mutate(Value = round(Value, 2)) %>%
+  kable(caption = "Summary Statistics of Dataset", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+
+model1 <- read_csv("../Data/model1_ols_avg_deviation.csv")
+model1 %>%
+  mutate(across(where(is.numeric), round, 3)) %>%
+  kable(caption = "OLS Model 1: Average Deviation Predicting Box Office", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+model2 <- read_csv("../Data/model2_ols_all_beats.csv")
+model2 %>%
+  mutate(across(where(is.numeric), round, 3)) %>%
+  kable(caption = "OLS Model 2: All Beat Deviations Predicting Box Office", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+rf_importance <- read_csv("../Data/rf_feature_importance.csv")
+rf_importance %>%
+  rename(
+    Beat = beat,
+    `Importance (%IncMSE)` = IncMSE,
+    `Importance (%)` = ImportancePct
+  ) %>%
+  mutate(
+    `Importance (%IncMSE)` = round(`Importance (%IncMSE)`, 3),
+    `Importance (%)` = round(`Importance (%)`, 2)
+  ) %>%
+  kable(caption = "Random Forest Feature Importance", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
